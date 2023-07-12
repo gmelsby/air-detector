@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+  {% block body_content %}
+    <table>
+      <tr>
+        <th>Time</th>
+        <th>PM_1.0</th>
+        <th>PM_2.5</th>
+        <th>PM_1.0env</th>
+        <th>PM_2.5env</th>
+	<th>0.3um</th>
+	<th>0.5um</th>
+      </tr>
+      {% for row in rows %}
+        <tr>
+	  <td>{{row['local_time']}}</td>
+	  <td>{{row['pm_1']}}</td>
+	  <td>{{row['pm_2_5']}}</td>
+	  <td>{{row['pm_1_env']}}</td>
+	  <td>{{row['pm_2_5_env']}}</td>
+	  <td>{{row['particles_0_3']}}</td>
+	  <td>{{row['particles_0_5']}}</td>
+	</tr>
+      {% endfor %}
+  {% endblock %}
