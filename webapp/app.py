@@ -7,7 +7,10 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    db_conn = get_connection(DB_PATH)
+    try:
+        db_conn = get_connection(DB_PATH)
+    except Error as e:
+        print(e)
     rows = db_conn.execute(
     '''
     SELECT datetime(dt, 'localtime') as local_time, * FROM Samples
