@@ -3,11 +3,12 @@ import board
 import busio
 import serial
 import sqlite3
+import os
 from digitalio import DigitalInOut, Direction, Pull
 from adafruit_pm25.uart import PM25_UART
 
 # path to sqlite3 database
-DB_PATH = '../quality.db'
+RELATIVE_DB_PATH = '../quality.db'
 # minutes to sleep between measurements
 MIN_INTERVAL = 5 
 
@@ -26,13 +27,19 @@ datetime('now'),
 '''
 
 def get_sensor():
-   # returns a connection to the sensor
+    """
+    returns a connection to the sensor
+    """
+
     uart = serial.Serial("/dev/ttyS0", baudrate=9600, timeout=0.25)
     return PM25_UART(uart)
     print("Found PM2.5 sensor, reading data...")
 
 def get_reading(sensor, retries=10):
-    # returns a dictionary of readings
+    """
+    returns a dictionary of readings
+    """
+
     for _ in range(retries):
         try:
             # if successful break out of retry loop
@@ -46,8 +53,17 @@ def get_reading(sensor, retries=10):
     raise RuntimeError('Unable to read from sensor')
 
 def write_to_db(data, retries=10):
-    # Connect to sqlite database
-    conn = sqlite3.connect(DB_PATH)
+    """
+    Connect to sqlite database
+    """
+
+    # get absolute path
+    path = os.path.abspath(__file__)
+    dir_path = os.path.dirname(path)
+    db_path = f'{dir_path}/{RELATIVE_DB_PATH}'
+    print(db_path)
+
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     for _ in range(retries):
         try:
@@ -68,6 +84,7 @@ def main():
     pm25 = get_sensor()
 
     # get the reading
+    print('reading from sensor')
     try:
         aqdata = get_reading(pm25)
     except RuntimeError as e:
