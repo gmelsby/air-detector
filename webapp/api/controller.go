@@ -13,6 +13,7 @@ func ListSamples(w http.ResponseWriter, r *http.Request) {
   // check for query parameters
   queryParams := r.URL.Query()
   if offset := queryParams.Get("offset"); offset != "" {
+    // make sure we have an integer
     offsetParam, err := strconv.Atoi(offset)
     if err != nil {
       render.Render(w, r, ErrBadRequest(err))
@@ -21,6 +22,7 @@ func ListSamples(w http.ResponseWriter, r *http.Request) {
     params.Offset = offsetParam
   }
   if count := queryParams.Get("count"); count != "" {
+    // make sure we have an integer
     countParam, err := strconv.Atoi(count)
     if err != nil {
       render.Render(w, r, ErrBadRequest(err))
@@ -37,6 +39,7 @@ func ListSamples(w http.ResponseWriter, r *http.Request) {
     return
   }
 
+  // send data back
 	if err := render.RenderList(w, r, SampleListResponse(data)); err != nil {
 		render.Render(w, r, ErrRender(err))
 		return
@@ -65,6 +68,7 @@ func (*Sample) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
+// allows a list of samples to be rendered
 func SampleListResponse(samples []*Sample) []render.Renderer {
   list := []render.Renderer{}
   for _, sample := range samples {
