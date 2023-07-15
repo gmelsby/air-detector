@@ -2,11 +2,35 @@ package main
 
 import (
 	"net/http"
+  "strconv"
 	"github.com/go-chi/render"
 )
 
+// handles the GET /samples endpoint
 func ListSamples(w http.ResponseWriter, r *http.Request) {
   params := GetRecentSamplesParams{}
+
+  // check for query parameters
+  queryParams := r.URL.Query()
+  if offset := queryParams.Get("offset"); offset != "" {
+    offsetParam, err := strconv.Atoi(offset)
+    if err != nil {
+      render.Render(w, r, ErrBadRequest(err))
+      return
+    }
+    params.Offset = offsetParam
+  }
+  if count := queryParams.Get("count"); count != "" {
+    countParam, err := strconv.Atoi(count)
+    if err != nil {
+      render.Render(w, r, ErrBadRequest(err))
+      return
+    }
+    params.Count = countParam
+  }
+
+
+  // get data from db
   data, err := GetRecentSamples(params)
   if err != nil {
     render.Render(w, r, ErrRender(err))
@@ -19,6 +43,7 @@ func ListSamples(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// placeholder until python script is modified and called as exec()
 func CreateSample(w http.ResponseWriter, r *http.Request) {
 	if err := render.Render(w, r, &Sample{"hello", 2, 2, 2, 2, 2, 2}); err != nil {
 		render.Render(w, r, ErrRender(err))
@@ -70,4 +95,14 @@ func ErrRender(err error) render.Renderer {
 		StatusText:     "Error rendering response.",
 		ErrorText:      err.Error(),
 	}
+}
+
+// sends 400 code
+func ErrBadRequest(err error) render.Renderer {
+  return &ErrResponse {
+    Err:  err,
+    HTTPStatusCode: 400,
+    StatusText: "Bad Request",
+    ErrorText: err.Error(),
+  }
 }
