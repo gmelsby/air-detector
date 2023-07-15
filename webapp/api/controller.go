@@ -1,37 +1,52 @@
 package main
 
 import (
-  "net/http"
-
-  "github.com/go-chi/render"
+	"net/http"
+	"github.com/go-chi/render"
 )
 
 func ListSamples(w http.ResponseWriter, r *http.Request) {
-  if err := render.Render(w, r, &Sample{"hello", 1, 1, 1, 1, 1, 1}); err != nil {
+  params := GetRecentSamplesParams{}
+  data, err := GetRecentSamples(params)
+  if err != nil {
     render.Render(w, r, ErrRender(err))
     return
   }
+
+	if err := render.RenderList(w, r, SampleListResponse(data)); err != nil {
+		render.Render(w, r, ErrRender(err))
+		return
+	}
 }
 
 func CreateSample(w http.ResponseWriter, r *http.Request) {
-  if err := render.Render(w, r, &Sample{"hello", 2, 2, 2, 2, 2, 2}); err != nil {
-    render.Render(w, r, ErrRender(err))
-    return
-  }
+	if err := render.Render(w, r, &Sample{"hello", 2, 2, 2, 2, 2, 2}); err != nil {
+		render.Render(w, r, ErrRender(err))
+		return
+	}
 }
 
 type Sample struct {
-  Dt string `json:"dt"`
-  Pm1 int `json:"pm1"`
-  Pm25 int `json:"pm25"`
-  Pm1Env int `json:"pm1env"`
-  Pm25Env int `json:"pm25env"`
-  Particles03 int `json:"particles03"`
-  Particles05 int `json:"particles05"`
+  LocalTime   string `json:"localTime"`
+	Pm1         int    `json:"pm1"`
+	Pm25        int    `json:"pm25"`
+	Pm1Env      int    `json:"pm1env"`
+	Pm25Env     int    `json:"pm25env"`
+	Particles03 int    `json:"particles03"`
+	Particles05 int    `json:"particles05"`
 }
 
 func (*Sample) Render(w http.ResponseWriter, r *http.Request) error {
-  return nil
+	return nil
+}
+
+func SampleListResponse(samples []*Sample) []render.Renderer {
+  list := []render.Renderer{}
+  for _, sample := range samples {
+    list = append(list, sample)
+  }
+
+  return list
 }
 
 type ErrResponse struct {
@@ -48,7 +63,6 @@ func (e *ErrResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-
 func ErrRender(err error) render.Renderer {
 	return &ErrResponse{
 		Err:            err,
@@ -57,4 +71,3 @@ func ErrRender(err error) render.Renderer {
 		ErrorText:      err.Error(),
 	}
 }
-
