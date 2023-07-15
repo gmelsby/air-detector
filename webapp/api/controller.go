@@ -40,7 +40,6 @@ func ListSamples(w http.ResponseWriter, r *http.Request) {
   }
 
   // send data back
-  w.Header().Set("Access-Control-Allow-Origin", "*")
 	if err := render.RenderList(w, r, SampleListResponse(data)); err != nil {
 		render.Render(w, r, ErrRender(err))
 		return
