@@ -1,3 +1,6 @@
+import json
+import sys
+import argparse
 import time
 import board
 import busio
@@ -33,9 +36,8 @@ def get_sensor():
 
     uart = serial.Serial("/dev/ttyS0", baudrate=9600, timeout=0.25)
     return PM25_UART(uart)
-    print("Found PM2.5 sensor, reading data...")
 
-def get_reading(sensor, retries=10):
+def get_reading(sensor, retries=5):
     """
     returns a dictionary of readings
     """
@@ -45,14 +47,13 @@ def get_reading(sensor, retries=10):
             # if successful break out of retry loop
             return sensor.read()
         except RuntimeError:
-            print("Unable to read from sensor, retrying...")
             time.sleep(1)
             # want to retry until we get a reading
             continue
 
     raise RuntimeError('Unable to read from sensor')
 
-def write_to_db(data, retries=10):
+def write_to_db(data, retries=3):
     """
     Connect to sqlite database
     """
@@ -61,7 +62,6 @@ def write_to_db(data, retries=10):
     path = os.path.abspath(__file__)
     dir_path = os.path.dirname(path)
     db_path = f'{dir_path}/{RELATIVE_DB_PATH}'
-    print(db_path)
 
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -73,37 +73,71 @@ def write_to_db(data, retries=10):
             conn.commit()
             return
         except sqlite3.Error as e:
-            print(f'Error writing to database: {e}')
+            time.sleep(1)
+            # retry until we write or run out of retries
             continue
-
         finally:
             conn.close()
 
+        # raise error if unable to write to db even after retries
+        raise RuntimeError(f'Error writing to database: {e}')
+
 def main():
+    # parse flags
+    parser = argparse.ArgumentParser(
+            prog='pm2_5',
+            description='Reads the air quality and outputs a JSON represntation to stdout. Optionally saves it to a database')
+
+    parser.add_argument('-v', '--verbose', action='store_true', help='If enabled, prints info about the status of the program')
+    parser.add_argument('-s', '--save', action='store_true', help='If enabled, saves reading to a sqlite3 database')
+
+    args = parser.parse_args()
+
     # connect to the sensor
     pm25 = get_sensor()
 
     # get the reading
-    print('reading from sensor')
+    if args.verbose: print('reading from sensor')
     try:
         aqdata = get_reading(pm25)
     except RuntimeError as e:
         # exit if no reading
-        print(e)
-        return
+        print(e, sys.stderr)
+        sys.exit(os.EX_UNAVAILABLE)
 
-    print("Writing values to database")
-    data = (
-        aqdata["pm10 standard"],
-        aqdata["pm25 standard"],
-        aqdata["pm10 env"],
-        aqdata["pm25 env"],
-        aqdata["particles 03um"],
-        aqdata["particles 05um"]
-    )
-    write_to_db(data)
 
-    print('successfully wrote to database')
+
+    # for JSON output
+    data_dict = {
+            'pm1': aqdata['pm10 standard'],
+            'pm25': aqdata['pm25 standard'],
+            'pm1env': aqdata['pm10 env'],
+            'pm25env': aqdata['pm25 env'],
+            'particles03' :aqdata['particles 03um'],
+            'particles05': aqdata['particles 05um']
+    }
+
+    # save if flag specified
+    if args.save:
+        data = (
+            aqdata["pm10 standard"],
+            aqdata["pm25 standard"],
+            aqdata["pm10 env"],
+            aqdata["pm25 env"],
+            aqdata["particles 03um"],
+            aqdata["particles 05um"]
+        )
+        if args.verbose: print("Writing values to database")
+        try:
+            write_to_db(data)
+        except RuntimeError as e:
+            print(e, sys.stderr)
+            sys.exit(os.EX_UNAVAILABLE)
+
+        if args.verbose: print('successfully wrote to database')
+
+    # output reading to stdout
+    print(json.dumps(data_dict))
 
 if __name__ == '__main__':
     main()
