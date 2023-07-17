@@ -4,7 +4,11 @@ import (
 	"net/http"
   "strconv"
 	"github.com/go-chi/render"
+  "fmt"
+  "os/exec"
 )
+
+const PathToPm2_5 = "/home/pi/air-detector/pm2_5/"
 
 // handles the GET /samples endpoint
 func ListSamples(w http.ResponseWriter, r *http.Request) {
@@ -46,6 +50,18 @@ func ListSamples(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
+// uses exec to run python program which returns current measurements
+func ReadCurrentSample(w http.ResponseWriter, r *http.Request) {
+  reading, err := exec.Command(PathToPm2_5 + ".venv/bin/python", PathToPm2_5 + "detector.py").Output()
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  fmt.Println(string(reading))
+  return
+}
+
 // placeholder until python script is modified and called as exec()
 func CreateSample(w http.ResponseWriter, r *http.Request) {
 	if err := render.Render(w, r, &Sample{"hello", 2, 2, 2, 2, 2, 2}); err != nil {
@@ -64,6 +80,7 @@ type Sample struct {
 	Particles05 int    `json:"particles05"`
 }
 
+// convey that Sample is able to be rendered
 func (*Sample) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
