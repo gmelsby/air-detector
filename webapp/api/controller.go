@@ -4,7 +4,7 @@ import (
 	"net/http"
   "strconv"
 	"github.com/go-chi/render"
-  "fmt"
+  "encoding/json"
   "os/exec"
 )
 
@@ -39,7 +39,7 @@ func ListSamples(w http.ResponseWriter, r *http.Request) {
   // get data from db
   data, err := GetRecentSamples(params)
   if err != nil {
-    render.Render(w, r, ErrRender(err))
+    render.Render(w, r, ErrUnavailable(err))
     return
   }
 
@@ -55,17 +55,25 @@ func ListSamples(w http.ResponseWriter, r *http.Request) {
 func ReadCurrentSample(w http.ResponseWriter, r *http.Request) {
   reading, err := exec.Command(PathToPm2_5 + ".venv/bin/python", PathToPm2_5 + "detector.py").Output()
   if err != nil {
-    fmt.Println(err)
+		render.Render(w, r, ErrUnavailable(err))
     return
   }
-  fmt.Println(string(reading))
-  return
+
+  // parse json
+  var results Sample
+  if err := json.Unmarshal(reading, &results); err != nil {
+		render.Render(w, r, ErrUnavailable(err))
+    return
+  }
+
+	if err := render.Render(w, r, &results); err != nil {
+		render.Render(w, r, ErrRender(err))
+  }
 }
 
 // placeholder until python script is modified and called as exec()
 func CreateSample(w http.ResponseWriter, r *http.Request) {
 	if err := render.Render(w, r, &Sample{"hello", 2, 2, 2, 2, 2, 2}); err != nil {
-		render.Render(w, r, ErrRender(err))
 		return
 	}
 }
@@ -126,4 +134,14 @@ func ErrBadRequest(err error) render.Renderer {
     StatusText: "Bad Request",
     ErrorText: err.Error(),
   }
+}
+
+// sends 503 code
+func ErrUnavailable(err error) render.Renderer {
+	return &ErrResponse{
+		Err:            err,
+		HTTPStatusCode: 503,
+		StatusText:     "The requested resource is currently unavailable",
+		ErrorText:      err.Error(),
+	}
 }
