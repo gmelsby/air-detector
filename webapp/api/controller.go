@@ -71,11 +71,24 @@ func ReadCurrentSample(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-// placeholder until python script is modified and called as exec()
+// Reads a current sample and writes results to database
 func CreateSample(w http.ResponseWriter, r *http.Request) {
-	if err := render.Render(w, r, &Sample{"hello", 2, 2, 2, 2, 2, 2}); err != nil {
-		return
-	}
+  reading, err := exec.Command(PathToPm2_5 + ".venv/bin/python", PathToPm2_5 + "detector.py", "-s").Output()
+  if err != nil {
+		render.Render(w, r, ErrUnavailable(err))
+    return
+  }
+
+  // parse json
+  var results Sample
+  if err := json.Unmarshal(reading, &results); err != nil {
+		render.Render(w, r, ErrUnavailable(err))
+    return
+  }
+
+	if err := render.Render(w, r, &results); err != nil {
+		render.Render(w, r, ErrRender(err))
+  }
 }
 
 type Sample struct {

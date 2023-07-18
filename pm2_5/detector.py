@@ -71,7 +71,7 @@ def write_to_db(data, retries=3):
             cursor.execute(INSERTION_QUERY, data)
             # commit insertion
             conn.commit()
-            return
+            return cursor.fetchone()
         except sqlite3.Error as e:
             time.sleep(1)
             # retry until we write or run out of retries
@@ -106,7 +106,6 @@ def main():
         sys.exit(os.EX_UNAVAILABLE)
 
 
-
     # for JSON output
     data_dict = {
             'pm1': aqdata['pm10 standard'],
@@ -119,17 +118,16 @@ def main():
 
     # save if flag specified
     if args.save:
-        data = (
-            aqdata["pm10 standard"],
-            aqdata["pm25 standard"],
-            aqdata["pm10 env"],
-            aqdata["pm25 env"],
-            aqdata["particles 03um"],
-            aqdata["particles 05um"]
-        )
         if args.verbose: print("Writing values to database")
         try:
-            write_to_db(data)
+            result = write_to_db((
+                data_dict['pm1'],
+                data_dict['pm25'],
+                data_dict['pm1env'],
+                data_dict['pm25env'],
+                data_dict['particles03'],
+                data_dict['particles05']
+                ))
         except RuntimeError as e:
             print(e, sys.stderr)
             sys.exit(os.EX_UNAVAILABLE)
