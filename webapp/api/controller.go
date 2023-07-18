@@ -51,43 +51,40 @@ func ListSamples(w http.ResponseWriter, r *http.Request) {
 }
 
 
-// uses exec to run python program which returns current measurements
-func ReadCurrentSample(w http.ResponseWriter, r *http.Request) {
-  reading, err := exec.Command(PathToPm2_5 + ".venv/bin/python", PathToPm2_5 + "detector.py").Output()
-  if err != nil {
-		render.Render(w, r, ErrUnavailable(err))
-    return
-  }
+// returns function that uses exec to run python program which returns current measurements
+// parameter determines whether read data will be saved or not
+// resulting function returns request with 200 if sample not saved, 201 if saved
+func ReadCurrentSampleFactory(saveResults bool) func (w http.ResponseWriter, r *http.Request) {
+  return func(w http.ResponseWriter, r *http.Request) {
+    // put our cli arguments in a list and add the flag if necessary
+    execArgs := []string{PathToPm2_5 + "detector.py"}
+    if saveResults {
+      execArgs = append(execArgs, "-s")
+    }
 
-  // parse json
-  var results Sample
-  if err := json.Unmarshal(reading, &results); err != nil {
-		render.Render(w, r, ErrUnavailable(err))
-    return
-  }
+    // get current reading
+    reading, err := exec.Command(PathToPm2_5 + ".venv/bin/python", execArgs...).Output()
+    if err != nil {
+      render.Render(w, r, ErrUnavailable(err))
+      return
+    }
 
-	if err := render.Render(w, r, &results); err != nil {
-		render.Render(w, r, ErrRender(err))
-  }
-}
+    // parse json
+    var results Sample
+    if err := json.Unmarshal(reading, &results); err != nil {
+      render.Render(w, r, ErrUnavailable(err))
+      return
+    }
 
-// Reads a current sample and writes results to database
-func CreateSample(w http.ResponseWriter, r *http.Request) {
-  reading, err := exec.Command(PathToPm2_5 + ".venv/bin/python", PathToPm2_5 + "detector.py", "-s").Output()
-  if err != nil {
-		render.Render(w, r, ErrUnavailable(err))
-    return
-  }
+    // set code to 201 if we have saved data to db
+    if saveResults {
+      render.Status(r, http.StatusCreated)
+    }
 
-  // parse json
-  var results Sample
-  if err := json.Unmarshal(reading, &results); err != nil {
-		render.Render(w, r, ErrUnavailable(err))
-    return
-  }
-
-	if err := render.Render(w, r, &results); err != nil {
-		render.Render(w, r, ErrRender(err))
+    // return results
+    if err := render.Render(w, r, &results); err != nil {
+      render.Render(w, r, ErrRender(err))
+    }
   }
 }
 
