@@ -6,13 +6,14 @@ import (
 	"github.com/go-chi/render"
   "encoding/json"
   "os/exec"
+  "time"
 )
 
 const PathToPm2_5 = "/home/pi/air-detector/pm2_5/"
 
 // handles the GET /samples endpoint
 func ListSamples(w http.ResponseWriter, r *http.Request) {
-  params := GetRecentSamplesParams{}
+  getRecentSamplesArgs := GetRecentSamplesParams{}
 
   // check for query parameters
   queryParams := r.URL.Query()
@@ -23,8 +24,9 @@ func ListSamples(w http.ResponseWriter, r *http.Request) {
       render.Render(w, r, ErrBadRequest(err))
       return
     }
-    params.Offset = offsetParam
+    getRecentSamplesArgs.Offset = offsetParam
   }
+
   if count := queryParams.Get("count"); count != "" {
     // make sure we have an integer
     countParam, err := strconv.Atoi(count)
@@ -32,15 +34,35 @@ func ListSamples(w http.ResponseWriter, r *http.Request) {
       render.Render(w, r, ErrBadRequest(err))
       return
     }
-    params.Count = countParam
+    getRecentSamplesArgs.Count = countParam
   }
 
+  var data *[]*Sample
+  var err error
 
-  // get data from db
-  data, err := GetRecentSamples(params)
-  if err != nil {
-    render.Render(w, r, ErrUnavailable(err))
-    return
+  // if we have a date parameter verify it and send to GetDaysSamples
+  if date := queryParams.Get("date"); date != "" {
+    layout := "2006-01-02"
+    // if date is not in YYYY-MM-DD format send back error
+    if _, err  = time.Parse(layout, date); err != nil {
+      render.Render(w, r, ErrBadRequest(err))
+      return
+    }
+    // pack up arguments in struct and send to GetDaysSamples
+    getDaysSamplesArgs := GetDaysSamplesParams{getRecentSamplesArgs, date}
+    data, err = GetDaysSamples(getDaysSamplesArgs)
+    if err != nil {
+      render.Render(w, r, ErrUnavailable(err))
+      return
+    }
+
+  } else {
+    // otherwise we have a request for recent samples
+    data, err = GetRecentSamples(getRecentSamplesArgs)
+    if err != nil {
+      render.Render(w, r, ErrUnavailable(err))
+      return
+    }
   }
 
   // send data back
@@ -104,9 +126,9 @@ func (*Sample) Render(w http.ResponseWriter, r *http.Request) error {
 }
 
 // allows a list of samples to be rendered
-func SampleListResponse(samples []*Sample) []render.Renderer {
+func SampleListResponse(samples *[]*Sample) []render.Renderer {
   list := []render.Renderer{}
-  for _, sample := range samples {
+  for _, sample := range *samples {
     list = append(list, sample)
   }
 
