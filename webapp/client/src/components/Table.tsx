@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'preact/hooks';
+import { BsFillCaretLeftFill, BsFillCaretRightFill, BsCaretRight } from 'react-icons/bs'
 
 interface Sample {
     localTime: string;
@@ -11,33 +12,31 @@ interface Sample {
 }
 
 export default function Table() {
-  const [data, setData] = useState<Sample[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [data, setData] = useState<Sample[]>([]);
+  const [page, setPage] = useState(0);
+  const linesPerPage = 15;
   
-  const getSamples = useCallback(async () => {
-    setIsLoading(true)
-    const response = await fetch(`/api/samples`);
-    const result = await response.json()
-    setData(result)
-    setIsLoading(false)
-  }, [setIsLoading, setData]);
+  // to be used in useEffect for getting samples
+  const getSamples = useCallback(async (pageNumber: number, pageLimit: number) => {
+    const response = await fetch(`/api/samples?offset=${pageNumber * pageLimit}&count=${pageLimit}`);
+    const result = await response.json();
+    setData(result);
+  }, [setData]);
 
   useEffect(() => {
-    getSamples()
-  }, [getSamples]);
+    getSamples(page, linesPerPage);
+  }, [getSamples, page, linesPerPage]);
 
-  if (data.length !== 0) {
-    console.log("updated")
-  }
 
   return (
+    <>
     <table>
       <tr>
         <th>
           {['Time', 'PM 1.0', 'PM 2.5', 'Particles > 0.3um', 'Particles > 0.5um']}
         </th>
       </tr>
-      {isLoading ? <p>Loading...</p>: data.map(sample => {
+      {data.map(sample => {
         return (<tr key={sample.localTime}>
           <td>{sample.localTime}</td>
           <td>{sample.pm1}</td>
@@ -47,5 +46,13 @@ export default function Table() {
         </tr>)
       })}
     </table>
+    <p>
+      <BsFillCaretLeftFill onClick={() => setPage(val => val + 1)}/>
+      page {page}
+      {page == 0 ? <BsCaretRight /> : 
+      <BsFillCaretRightFill onClick={() => setPage(val => Math.max(0, val - 1))}/>
+      }
+    </p>
+    </>
   );
 }
