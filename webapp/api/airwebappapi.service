@@ -1,0 +1,13 @@
+[Unit]
+Description=API for air quality monitoring web application
+After=network.target
+
+[Service]
+User=pi
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/home/pi/air-detector/webapp/api/build/api
+
+[Install]
+WantedBy=multi-user.target

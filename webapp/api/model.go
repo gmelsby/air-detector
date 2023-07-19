@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-const dbPath string = "../../quality.db"
+const dbPath string = "/home/pi/air-detector/quality.db"
 
 // general skeleton of retrieving samples from sqlite. Query string and parameters can be specified
 func GetSamples(queryString string, values ...interface{}) (*[]*Sample, error) {
