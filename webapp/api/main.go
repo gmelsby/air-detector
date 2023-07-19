@@ -24,8 +24,8 @@ func main() {
 		r.Get("/", ListSamples)
 		// create new sample at current time
 		r.Post("/", ReadCurrentSampleFactory(true))
-    // read current sample at current time but do not write to db
-    r.Get("/current", ReadCurrentSampleFactory(false))
+		// read current sample at current time but do not write to db
+		r.Get("/current", ReadCurrentSampleFactory(false))
 	})
 
 	// placeholder route for root route
