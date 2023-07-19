@@ -1,15 +1,8 @@
 import { useState, useEffect, useCallback } from 'preact/hooks';
-import { BsFillCaretLeftFill, BsFillCaretRightFill, BsCaretRight } from 'react-icons/bs'
+import { BsFillCaretLeftFill, BsFillCaretRightFill, BsCaretRight } from 'react-icons/bs';
+import { Sample } from '../Types';
 
-interface Sample {
-    localTime: string;
-    pm1: number;
-    pm25: number;
-    pm1env: number;
-    pm25env: number;
-    particles03: number;
-    particles05: number;
-}
+
 
 export default function Table() {
   const [data, setData] = useState<Sample[]>([]);
