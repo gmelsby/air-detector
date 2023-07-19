@@ -23,29 +23,29 @@ export default function Table() {
 
   return (
     <>
-    <table>
-      <tr>
-        <th>
-          {['Time', 'PM 1.0', 'PM 2.5', 'Particles > 0.3um', 'Particles > 0.5um']}
-        </th>
-      </tr>
-      {data.map(sample => {
-        return (<tr key={sample.localTime}>
-          <td>{sample.localTime}</td>
-          <td>{sample.pm1}</td>
-          <td>{sample.pm25}</td>
-          <td>{sample.particles03}</td>
-          <td>{sample.particles05}</td>
-        </tr>)
-      })}
-    </table>
-    <p>
-      <BsFillCaretLeftFill onClick={() => setPage(val => val + 1)}/>
+      <table>
+        <tr>
+          <th>
+            {['Time', 'PM 1.0', 'PM 2.5', 'Particles > 0.3um', 'Particles > 0.5um']}
+          </th>
+        </tr>
+        {data.map(sample => {
+          return (<tr key={sample.localTime}>
+            <td>{sample.localTime}</td>
+            <td>{sample.pm1}</td>
+            <td>{sample.pm25}</td>
+            <td>{sample.particles03}</td>
+            <td>{sample.particles05}</td>
+          </tr>);
+        })}
+      </table>
+      <p>
+        <BsFillCaretLeftFill onClick={() => setPage(val => val + 1)}/>
       page {page}
-      {page == 0 ? <BsCaretRight /> : 
-      <BsFillCaretRightFill onClick={() => setPage(val => Math.max(0, val - 1))}/>
-      }
-    </p>
+        {page == 0 ? <BsCaretRight /> : 
+          <BsFillCaretRightFill onClick={() => setPage(val => Math.max(0, val - 1))}/>
+        }
+      </p>
     </>
   );
 }
