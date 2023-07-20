@@ -6,22 +6,32 @@ export default function LiveReadings() {
   const intervalInMs = 5000;
 
 
-  const [isFetching, setIsFetching] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
   const [currentSample, setCurrentSample] = useState<Sample | undefined>(undefined);
 
   useEffect(() => {
-    if (isFetching) return;
-    // every 5 seconds update sample
-    const timeout = setTimeout(async () => {
-      setIsFetching(true);
-      const response = await fetch('/api/samples/current');
-      const result = await response.json();
-      setCurrentSample(result);
-      setIsFetching(false);
-      console.log('received data');
-    }, intervalInMs);
+    let timeoutId: number | undefined = undefined;
+    if (isFetching) {
+      const fetchData = async () => {
+        console.log('fetching data');
+        const response = await fetch('/api/samples/current');
+        const result = await response.json();
+        setCurrentSample(result);
+        setIsFetching(false);
+        console.log('received data');
+      };
 
-    return () => clearTimeout(timeout);
+      fetchData();
+
+    }
+    // every 5 seconds update sample
+    else {
+      timeoutId = setTimeout(() => {
+        setIsFetching(true);
+      }, intervalInMs);
+    }
+
+    return () => clearTimeout(timeoutId);
 
   }, [setCurrentSample, intervalInMs, isFetching, setIsFetching]);
 
