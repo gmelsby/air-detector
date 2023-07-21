@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="512"
+   height="512"
+   viewBox="0 0 512 512"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a84865, 2022-12-01)"
+   sodipodi:docname="air-pi-logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="2.0058594"
+     inkscape:cx="231.3223"
+     inkscape:cy="178.22785"
+     inkscape:window-width="1390"
+     inkscape:window-height="1205"
+     inkscape:window-x="645"
+     inkscape:window-y="112"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <inkscape:path-effect
+       effect="bspline"
+       id="path-effect1346"
+       is_visible="true"
+       lpeversion="1"
+       weight="33.333333"
+       steps="2"
+       helper_size="0"
+       apply_no_weight="true"
+       apply_with_weight="true"
+       only_selected="false" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="path239"
+       style="fill:#f9f9f9;stroke:#333333;stroke-width:3.5767;stroke-dasharray:none"
+       d="m 249.52885,95.039411 a 89.594142,109.97366 0 0 0 -86.77762,83.576579 80.054028,64.721342 0 0 0 -38.07242,-7.80481 80.054028,64.721342 0 0 0 -80.055338,64.72264 80.054028,64.721342 0 0 0 4.458773,20.86917 249.28739,84.190367 0 0 0 -42.1106305,44.59349 111.57789,49.988025 0 0 0 -2.1666335,9.25413 111.57789,49.988025 0 0 0 111.577209,49.98873 111.57789,49.988025 0 0 0 47.3907,-4.84216 41.478773,50.514224 0 0 0 32.66244,19.57607 41.478773,50.514224 0 0 0 30.72479,-16.67744 74.661785,58.407065 0 0 0 63.84743,28.25408 74.661785,58.407065 0 0 0 55.11262,-19.17661 98.719468,81.559414 0 0 0 22.86855,2.33785 98.719468,81.559414 0 0 0 62.47566,-18.57997 62.632945,75.771327 0 0 0 12.59906,1.74123 62.632945,75.771327 0 0 0 59.80922,-53.48656 l 0.87854,-0.0154 a 249.28739,84.190367 0 0 0 -0.48441,-1.51077 62.632945,75.771327 0 0 0 2.43086,-20.75909 62.632945,75.771327 0 0 0 -62.63421,-75.76922 62.632945,75.771327 0 0 0 -11.70069,1.50311 87.934995,71.035626 0 0 0 -87.43378,-63.59339 87.934995,71.035626 0 0 0 -22.24544,2.33786 89.594142,109.97366 0 0 0 -73.15468,-46.539557 z" />
+    <text
+       xml:space="preserve"
+       style="font-size:58.9441px;letter-spacing:-1.05117px;white-space:pre;inline-size:65.236;display:inline;fill:#e6e6e6;stroke:#333333;stroke-linejoin:miter;stroke-dasharray:none;stroke-dashoffset:0"
+       x="189.94353"
+       y="214.37196"
+       id="text1850"
+       transform="matrix(4.8337909,0,0,4.1344675,-765.62892,-549.70052)"><tspan
+         x="189.94353"
+         y="214.37196"
+         id="tspan3570"><tspan
+           style="font-style:italic;font-family:Futura;-inkscape-font-specification:'Futura Italic';fill:#d40000"
+           id="tspan3568">Pi</tspan></tspan></text>
+  </g>
+</svg>
