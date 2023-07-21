@@ -13,12 +13,10 @@ export default function LiveReadings() {
     let timeoutId: number | undefined = undefined;
     if (isFetching) {
       const fetchData = async () => {
-        console.log('fetching data');
         const response = await fetch('/api/samples/current');
         const result = await response.json();
         setCurrentSample(result);
         setIsFetching(false);
-        console.log('received data');
       };
 
       fetchData();
