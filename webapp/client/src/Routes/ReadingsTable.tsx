@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'preact/hooks';
 import { BsFillCaretLeftFill, BsFillCaretRightFill, BsCaretRight } from 'react-icons/bs';
 
 export default function Table() {
-  const [data, setData] = useState<Sample[]>([]);
+  const [data, setData] = useState<Sample[] | undefined>(undefined);
   const [page, setPage] = useState(0);
   const linesPerPage = 15;
   
@@ -28,7 +28,7 @@ export default function Table() {
             })}
           </tr>
         </thead>
-        {data.map(sample => {
+        {data === undefined ? <p>Loading...</p> : data.map(sample => {
           return (<tr key={sample.localTime}>
             <td className="border border-slate-700 px-3 py-1">{sample.localTime}</td>
             <td className="border border-slate-700 px-3 py-1">{sample.pm1}</td>

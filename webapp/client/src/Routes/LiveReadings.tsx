@@ -32,5 +32,5 @@ export default function LiveReadings() {
 
   }, [setCurrentSample, intervalInMs, isFetching, setIsFetching]);
 
-  return <p>{JSON.stringify(currentSample)}</p>;
+  return <p>{currentSample === undefined ? 'Loading...' : JSON.stringify(currentSample)}</p>;
 }
