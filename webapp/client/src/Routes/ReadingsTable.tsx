@@ -20,7 +20,7 @@ export default function Table() {
 
   return (
     <div>
-      <table className="table-auto border border-collapse border-slate-500 text-right">
+      <table className="table-auto border border-collapse border-slate-500 text-right m-auto">
         <thead>
           <tr>
             {['Time', 'PM 1.0', 'PM 2.5', 'Particles > 0.3um', 'Particles > 0.5um'].map(label => {
@@ -38,7 +38,7 @@ export default function Table() {
           </tr>);
         })}
       </table>
-      <div className="row-auto">
+      <div className="flex flex-row justify-center">
         <BsFillCaretLeftFill className="cursor-pointer" onClick={() => setPage(val => val + 1)}/>
         <p>
           page {page}
