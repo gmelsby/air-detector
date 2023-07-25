@@ -80,7 +80,7 @@ export default function Graph() {
   };
 
   return (
-    <>
+    <div className="container m-auto">
       {data === undefined ? 
         <p>Loading...</p> :
         <Line data={chartData}/>
@@ -92,6 +92,6 @@ export default function Graph() {
         const target = e.target as HTMLInputElement;
         setDate(target.value);
       }}/>
-    </>
+    </div>
   );
 }
