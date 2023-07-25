@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'preact/hooks';
-import { Sample } from '../Types';
 
 
 export default function LiveReadings() {
