@@ -18,6 +18,7 @@
     "@typescript-eslint/parser": "^6.1.0",
     "eslint": "^8.45.0",
     "eslint-plugin-react": "^7.32.2",
+    "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.0"
   }

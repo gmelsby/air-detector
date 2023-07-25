@@ -1,8 +1,5 @@
 import { useState, useEffect, useCallback } from 'preact/hooks';
 import { BsFillCaretLeftFill, BsFillCaretRightFill, BsCaretRight } from 'react-icons/bs';
-import { Sample } from '../Types';
-
-
 
 export default function Table() {
   const [data, setData] = useState<Sample[]>([]);
@@ -23,19 +20,21 @@ export default function Table() {
 
   return (
     <>
-      <table>
-        <tr>
-          <th>
-            {['Time', 'PM 1.0', 'PM 2.5', 'Particles > 0.3um', 'Particles > 0.5um']}
-          </th>
-        </tr>
+      <table className="table-auto border border-collapse border-slate-500">
+        <thead>
+          <tr>
+            {['Time', 'PM 1.0', 'PM 2.5', 'Particles > 0.3um', 'Particles > 0.5um'].map(label => {
+              return <td key={label} className="border border-slate-600">{label}</td>;
+            })}
+          </tr>
+        </thead>
         {data.map(sample => {
           return (<tr key={sample.localTime}>
-            <td>{sample.localTime}</td>
-            <td>{sample.pm1}</td>
-            <td>{sample.pm25}</td>
-            <td>{sample.particles03}</td>
-            <td>{sample.particles05}</td>
+            <td className="border border-slate-700">{sample.localTime}</td>
+            <td className="border border-slate-700">{sample.pm1}</td>
+            <td className="border border-slate-700">{sample.pm25}</td>
+            <td className="border border-slate-700">{sample.particles03}</td>
+            <td className="border border-slate-700">{sample.particles05}</td>
           </tr>);
         })}
       </table>

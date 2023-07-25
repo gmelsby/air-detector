@@ -1,4 +1,4 @@
-export interface Sample {
+declare interface Sample {
     localTime: string;
     pm1: number;
     pm25: number;
