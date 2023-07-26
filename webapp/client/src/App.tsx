@@ -1,5 +1,5 @@
 import './app.css';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import Root from './Routes/Root';
 import LiveReadings from './Routes/LiveReadings';
 import ReadingsTable from './Routes/ReadingsTable';
@@ -12,6 +12,10 @@ const router = createBrowserRouter([
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        index: true,
+        element: <Navigate to='/table' />
+      },
       {
         path: 'live',
         element: <LiveReadings />
