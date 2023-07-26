@@ -20,7 +20,7 @@ export default function Table() {
 
 
   return (
-    <div className="mx-5">
+    <div className="px-5">
       <table className="table-auto border border-collapse border-slate-500 text-right m-auto">
         <thead>
           <tr>
@@ -31,7 +31,7 @@ export default function Table() {
         </thead>
         {data === undefined ? <p>Loading...</p> : data.map(sample => {
           return (<tr key={sample.localTime}>
-            <td className="border border-slate-700 px-3 py-1">{sample.localTime}</td>
+            <td className="border border-slate-700 px-3 py-1"><b>{sample.localTime.slice(11, 16)}</b> {sample.localTime.slice(0, 10)}</td>
             <td className="border border-slate-700 px-3 py-1">{sample.pm1}</td>
             <td className="border border-slate-700 px-3 py-1">{sample.pm25}</td>
             <td className="border border-slate-700 px-3 py-1">{sample.particles03}</td>
