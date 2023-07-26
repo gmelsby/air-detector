@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "css-refresh": "tailwindcss -i ./src/tailwindapp.css -o ./src/app.css",
+    "css-watch": "tailwindcss -i ./src/tailwindapp.css -o ./src/app.css --watch"
   },
   "dependencies": {
     "chart.js": "^4.3.1",
