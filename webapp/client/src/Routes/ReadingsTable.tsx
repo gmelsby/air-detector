@@ -2,9 +2,10 @@ import { useState, useEffect, useCallback } from 'preact/hooks';
 import { BsFillCaretLeftFill, BsFillCaretRightFill, BsCaretRight } from 'react-icons/bs';
 
 export default function Table() {
+
   const [data, setData] = useState<Sample[] | undefined>(undefined);
   const [page, setPage] = useState(0);
-  const linesPerPage = 15;
+  const [linesPerPage] = useState(window.innerWidth > 640 ? 15 : 5);
   
   // to be used in useEffect for getting samples
   const getSamples = useCallback(async (pageNumber: number, pageLimit: number) => {
@@ -19,7 +20,7 @@ export default function Table() {
 
 
   return (
-    <div>
+    <div className="mx-5">
       <table className="table-auto border border-collapse border-slate-500 text-right m-auto">
         <thead>
           <tr>

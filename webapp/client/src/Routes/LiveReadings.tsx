@@ -2,6 +2,7 @@ import { useState, useEffect } from 'preact/hooks';
 
 
 export default function LiveReadings() {
+  // timeout 
   const intervalInMs = 5000;
 
 
@@ -40,7 +41,7 @@ export default function LiveReadings() {
   if (currentSample === undefined) return <p>Loading...</p>;
 
   return (
-    <div className="flex flex-row justify-center flex-wrap max-w-md m-auto">
+    <div className="flex flex-row justify-center flex-wrap max-w-md m-auto mx-5">
       {[['PM 1.0', 'pm1'], ['PM 2.5', 'pm25'], ['Particles > 0.3um / 0.1L', 'particles03']].map(([title, sampleKey]) =>
         <DataBox {...{title}} value={currentSample[(sampleKey as keyof Sample)]} key={title}/>
       )}

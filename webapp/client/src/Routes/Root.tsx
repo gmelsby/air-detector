@@ -5,7 +5,7 @@ export default function Root() {
     <>
       <div className="text-center content-center"> 
         <h1 className="text-2xl my-2">Air Quality Monitor</h1>
-        <nav className="mb-2 m-auto">
+        <nav className="mb-2 mx-5">
           <ul className="flex flex-row justify-center border-b p-2">
             <li className="mx-2">
               <NavLink to={'/live'} className={({ isActive }: {isActive: boolean}) => isActive ? 'text-l inline-block border border-gray-600 rounded py-1 px-3 bg-gray-600 text-white' : 'text-l inline-block border rounded py-1 px-3 border-gray-200 bg-gray-200 text-black'}>
