@@ -10,7 +10,7 @@ export default function LiveReadings() {
   const [currentSample, setCurrentSample] = useState<Sample | undefined>(undefined);
 
   useEffect(() => {
-    let timeoutId: number | undefined = undefined;
+    let timeoutId: NodeJS.Timeout | undefined = undefined;
     if (isFetching) {
       const fetchData = async () => {
         const response = await fetch('/api/samples/current');
