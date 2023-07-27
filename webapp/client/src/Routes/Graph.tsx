@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'preact/hooks';
+import { useState, useEffect, useCallback, useRef } from 'preact/hooks';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import { BsFillCaretLeftFill, BsFillCaretRightFill } from 'react-icons/bs';
 
 export default function Graph() {
 
@@ -25,6 +26,9 @@ export default function Graph() {
 
   const [currentDate, setCurrentDate] = useState<Date | undefined>(undefined);
   const [date, setDate] = useState<string | undefined>(undefined);
+
+  // to keep track of the date input element
+  const dateField = useRef<HTMLInputElement>(null);
 
   // way around time zones
   useEffect(() => {
@@ -85,13 +89,24 @@ export default function Graph() {
         <p>Loading...</p> :
         <Line data={chartData}/>
       }
-      <label htmlFor="dateSelect">Select date:</label>
-      <input type="date" id="dateSelect" value={date} onChange={(e) => {
-        if (e.target === null) return;
-        // need to reassure Typescript we are dealing with an HTML Input Element
-        const target = e.target as HTMLInputElement;
-        setDate(target.value);
-      }}/>
+      <div className="flex flex-row justify-center">
+        <BsFillCaretLeftFill className="cursor-pointer" onClick={() => {
+          dateField.current?.stepDown(1);
+          setDate(dateField.current?.value);
+        }}/>
+        <label htmlFor="dateSelect">Select date:</label>
+        <input type="date" id="dateSelect" ref={dateField} value={date} onChange={(e) => {
+          if (e.target === null) return;
+          // need to reassure Typescript we are dealing with an HTML Input Element
+          const target = e.target as HTMLInputElement;
+          setDate(target.value);
+        }}/>
+        <BsFillCaretRightFill className="cursor-pointer" onClick={() => {
+          dateField.current?.stepUp(1);
+          setDate(dateField.current?.value);
+        }}/>
+      </div>
+
     </div>
   );
 }
