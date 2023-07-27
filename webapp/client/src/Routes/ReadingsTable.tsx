@@ -24,10 +24,13 @@ export default function Table() {
 
   return (
     <div className="px-5">
-      <table className="table-auto border border-collapse border-slate-500 text-left m-auto">
+      <table className="table-auto border-separate border-spacing-0 text-left m-auto">
         <thead>
           <tr>
-            {['Time', 'PM 1.0', 'PM 2.5', 'Equivalent AQI', 'Particles > 0.3um', 'Particles > 0.5um'].map(label => {
+            <td className="border border-slate-600 py-1 px-3 text-center sticky z-10 left-0 bg-white">
+              Time
+            </td>
+            {['PM 1.0', 'PM 2.5', 'Equivalent AQI', 'Particles > 0.3um', 'Particles > 0.5um'].map(label => {
               return <td key={label} className="border border-slate-600 py-1 px-3 text-center">{label}</td>;
             })}
           </tr>
@@ -36,7 +39,10 @@ export default function Table() {
           const currentAqi = convertPm25ToAqi(sample.pm25);
           const currentAqiCategory = categorizeAqi(currentAqi);
           return (<tr key={sample.localTime}>
-            <td className="border border-slate-700 px-3 py-1">{localTimeToMMDDYYYY(sample.localTime)}<b> {sample.localTime.slice(11, 16)}</b></td>
+            <td className="border border-slate-700 py-1 px-3 sticky z-10 left-0 bg-white">
+              {localTimeToMMDDYYYY(sample.localTime)}
+              <b> {sample.localTime.slice(11, 16)}</b>
+            </td>
             <td className="border border-slate-700 px-3 py-1">{sample.pm1}</td>
             <td className="border border-slate-700 px-3 py-1">{sample.pm25}</td>
             <td className="border border-slate-700 px-3 py-1">
