@@ -10,7 +10,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { BsFillCaretLeftFill, BsFillCaretRightFill } from 'react-icons/bs';
+import { BsCaretRight, BsFillCaretLeftFill, BsFillCaretRightFill } from 'react-icons/bs';
 import { localTimeToMMDDYYYY } from '../Utils/DateUtils';
 
 export default function Graph() {
@@ -31,9 +31,10 @@ export default function Graph() {
   // to keep track of the date input element
   const dateField = useRef<HTMLInputElement>(null);
 
-  // way around time zones
   useEffect(() => {
-    const tzAdjustedDate = new Date(Date.now() - new Date().getTimezoneOffset() * 60000);
+    // way around time zones
+    // manually add in the time zone offset
+    const tzAdjustedDate = new Date(Date.now() - new Date().getTimezoneOffset() * 60_000);
     setCurrentDate(tzAdjustedDate);
     setDate(tzAdjustedDate.toISOString().slice(0, 10));
   }, [setDate, setCurrentDate]);
@@ -61,7 +62,6 @@ export default function Graph() {
     // check that date isn't before set lowerDateBound
     if (parsedDate < lowerDateBound) return;
     // check that the selected date isn't in the future
-    // add a day of padding because of GMT
     if (parsedDate > currentDate.getTime()) return;
 
     // we have validated, so now send request
@@ -99,22 +99,29 @@ export default function Graph() {
         <p>Loading...</p> :
         <Line data={chartData} options={chartOptions}/>
       }
-      <div className="flex flex-row justify-center">
-        <BsFillCaretLeftFill className="cursor-pointer" onClick={() => {
+      <div className="flex flex-row justify-center my-5">
+        <BsFillCaretLeftFill className="cursor-pointer text-2xl" onClick={() => {
           dateField.current?.stepDown(1);
           setDate(dateField.current?.value);
         }}/>
-        <label htmlFor="dateSelect">Date:</label>
-        <input type="date" id="dateSelect" ref={dateField} value={date} onChange={(e) => {
-          if (e.target === null) return;
-          // need to reassure Typescript we are dealing with an HTML Input Element
-          const target = e.target as HTMLInputElement;
-          setDate(target.value);
-        }}/>
-        <BsFillCaretRightFill className="cursor-pointer" onClick={() => {
-          dateField.current?.stepUp(1);
-          setDate(dateField.current?.value);
-        }}/>
+        <div className="mx-5">
+          <label htmlFor="dateSelect">Date:</label>
+          <input type="date" id="dateSelect" ref={dateField} value={date} onChange={(e) => {
+            if (e.target === null) return;
+            // need to reassure Typescript we are dealing with an HTML Input Element
+            const target = e.target as HTMLInputElement;
+            setDate(target.value);
+          }}/>
+        </div>
+        {currentDate === undefined
+        || dateField.current?.value === undefined 
+        || currentDate.getTime() < Date.parse(dateField.current?.value) + 86_400_000? // check that the day we are trying to move forward to is not in the future
+          <BsCaretRight className="text-2xl" /> :
+          <BsFillCaretRightFill className="cursor-pointer text-2xl" onClick={() => {
+            dateField.current?.stepUp(1);
+            setDate(dateField.current?.value);
+          }}/>
+        }
       </div>
 
     </div>

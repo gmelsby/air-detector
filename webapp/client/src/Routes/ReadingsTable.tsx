@@ -63,13 +63,13 @@ export default function Table() {
           </tr>);
         })}
       </table>
-      <div className="flex flex-row justify-center">
-        <BsFillCaretLeftFill className="cursor-pointer" onClick={() => setPage(val => val + 1)}/>
-        <p>
+      <div className="flex flex-row justify-center my-5">
+        <BsFillCaretLeftFill className="cursor-pointer text-2xl" onClick={() => setPage(val => val + 1)}/>
+        <p className="mx-5">
           page {page}
         </p>
-        {page == 0 ? <BsCaretRight /> : 
-          <BsFillCaretRightFill className="cursor-pointer" onClick={() => setPage(val => Math.max(0, val - 1))}/>
+        {page == 0 ? <BsCaretRight className="text-2xl"/> : 
+          <BsFillCaretRightFill className="cursor-pointer text-2xl" onClick={() => setPage(val => Math.max(0, val - 1))}/>
         }
       </div>
     </div>
