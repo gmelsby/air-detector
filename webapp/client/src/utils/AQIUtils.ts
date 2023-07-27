@@ -1,6 +1,6 @@
 // Functions for converting PM 2.5 to AQI
 
-export enum aqiCategory {
+export enum AqiCategory {
   Good = 'Good',
   Moderate = 'Moderate',
   UnhealthyForSensitiveGroups = 'Unhealthy for Sensitive Groups',
@@ -11,14 +11,14 @@ export enum aqiCategory {
 
 // map from AQI to air quality category
 const aqiBreakpoints = new Map([
-  [0, aqiCategory.Good],
-  [51, aqiCategory.Moderate],
-  [101, aqiCategory.UnhealthyForSensitiveGroups],
-  [151, aqiCategory.Unhealthy],
-  [201, aqiCategory.VeryUnhealthy],
-  [301, aqiCategory.Hazardous],
-  [401, aqiCategory.Hazardous],
-  [500, aqiCategory.Hazardous]
+  [0, AqiCategory.Good],
+  [51, AqiCategory.Moderate],
+  [101, AqiCategory.UnhealthyForSensitiveGroups],
+  [151, AqiCategory.Unhealthy],
+  [201, AqiCategory.VeryUnhealthy],
+  [301, AqiCategory.Hazardous],
+  [401, AqiCategory.Hazardous],
+  [500, AqiCategory.Hazardous]
 ]);
 
 // map from PM 2.5 breakpoints to AQI breakpoints
@@ -60,7 +60,6 @@ export const convertPm25ToAqi = (pm25: number) => {
   const bpHigh = Math.min(...([...pm25Breakpoints.keys()]
     .filter(b => b > pm25)));
 
-  console.log(bpHigh);
   // case where there were no higher breakpoints, so we are off the high end of the scale
   if (bpHigh === 0 || bpHigh === Infinity) return 500;
 
@@ -71,8 +70,6 @@ export const convertPm25ToAqi = (pm25: number) => {
   if (iLow === undefined || iHigh === undefined) {
     throw Error('Map key did not exist');
   }
-
-  console.log(`${JSON.stringify({iLow, iHigh, bpLow, bpHigh})}`);
 
   const unroundedAqi = ((iHigh - iLow) / (bpHigh - bpLow)) * (pm25 - bpLow) + iLow;
   return Math.round(unroundedAqi);

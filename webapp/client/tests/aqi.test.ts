@@ -1,5 +1,5 @@
 import { describe, expect, it, assert } from 'vitest';
-import { categorizeAqi, aqiCategory, convertPm25ToAqi } from '../src/utils/AQIUtils';
+import { categorizeAqi, AqiCategory, convertPm25ToAqi } from '../src/utils/AQIUtils';
 
 
 describe('categorizeAqi tests', () => {
@@ -8,46 +8,46 @@ describe('categorizeAqi tests', () => {
   });
 
   it('good aqi lower bound', () => {
-    assert.equal(categorizeAqi(0), aqiCategory.Good);
+    assert.equal(categorizeAqi(0), AqiCategory.Good);
   });
 
   it('good aqi upper bound', () => {
-    assert.equal(categorizeAqi(50), aqiCategory.Good);
+    assert.equal(categorizeAqi(50), AqiCategory.Good);
   });
 
   it('moderate aqi lower bound', () => {
-    assert.equal(categorizeAqi(51), aqiCategory.Moderate);
+    assert.equal(categorizeAqi(51), AqiCategory.Moderate);
   });
   it('moderate aqi upper bound', () => {
-    assert.equal(categorizeAqi(100), aqiCategory.Moderate);
+    assert.equal(categorizeAqi(100), AqiCategory.Moderate);
   });
 
   it('unhealthy for sensitive aqi lower bound', () => {
-    assert.equal(categorizeAqi(101), aqiCategory.UnhealthyForSensitiveGroups);
+    assert.equal(categorizeAqi(101), AqiCategory.UnhealthyForSensitiveGroups);
   });
 
   it('unhealthy for sensitive aqi upper bound', () => {
-    assert.equal(categorizeAqi(150), aqiCategory.UnhealthyForSensitiveGroups);
+    assert.equal(categorizeAqi(150), AqiCategory.UnhealthyForSensitiveGroups);
   });
 
   it('unhealthy lower bound', () => {
-    assert.equal(categorizeAqi(151), aqiCategory.Unhealthy);
+    assert.equal(categorizeAqi(151), AqiCategory.Unhealthy);
   });
 
   it('unhealthy upper bound', () => {
-    assert.equal(categorizeAqi(200), aqiCategory.Unhealthy);
+    assert.equal(categorizeAqi(200), AqiCategory.Unhealthy);
   });
 
   it('very unhealthy lower bound', () => {
-    assert.equal(categorizeAqi(201), aqiCategory.VeryUnhealthy);
+    assert.equal(categorizeAqi(201), AqiCategory.VeryUnhealthy);
   });
 
   it('very unhealthy upper bound', () => {
-    assert.equal(categorizeAqi(300), aqiCategory.VeryUnhealthy);
+    assert.equal(categorizeAqi(300), AqiCategory.VeryUnhealthy);
   });
 
   it('hazardous lower bound', () => {
-    assert.equal(categorizeAqi(301), aqiCategory.Hazardous);
+    assert.equal(categorizeAqi(301), AqiCategory.Hazardous);
   });
 });
 

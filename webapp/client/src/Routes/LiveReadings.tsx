@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
-import { categorizeAqi, convertPm25ToAqi } from '../utils/AQIUtils';
+import { AqiCategory, categorizeAqi, convertPm25ToAqi } from '../utils/AQIUtils';
 import { ComponentChildren } from 'preact';
+import { IoIosSquare } from 'react-icons/io';
 
 
 export default function LiveReadings() {
@@ -10,6 +11,7 @@ export default function LiveReadings() {
 
   const [isFetching, setIsFetching] = useState(true);
   const [currentAqi, setCurrentAqi] = useState(0);
+  const [currentAqiCategory, setCurrentAqiCategory] = useState<AqiCategory | undefined>(undefined);
   const [currentSample, setCurrentSample] = useState<Sample | undefined>(undefined);
 
   useEffect(() => {
@@ -24,7 +26,9 @@ export default function LiveReadings() {
         } 
         const result = await response.json();
         setCurrentSample(result);
-        setCurrentAqi(convertPm25ToAqi(result.pm25));
+        const aqi = convertPm25ToAqi(result.pm25);
+        setCurrentAqi(aqi);
+        setCurrentAqiCategory(categorizeAqi(aqi));
         setIsFetching(false);
       };
 
@@ -50,7 +54,26 @@ export default function LiveReadings() {
         <DataBox {...{title}} value={currentSample[(sampleKey as keyof Sample)]} key={title}/>
       )}
       <DataBox title="Equivalent AQI" value={currentAqi}>
-        <p>{categorizeAqi(currentAqi)}</p>
+        <div className="flex flex-row justify-center">
+          <IoIosSquare className={`text-xl stroke-black ${
+            currentAqiCategory === AqiCategory.Good ?
+              'text-green-500' :
+              currentAqiCategory === AqiCategory.Moderate ?
+                'text-yellow-300' :
+                currentAqiCategory === AqiCategory.UnhealthyForSensitiveGroups ?
+                  'text-orange-500' :
+                  currentAqiCategory === AqiCategory.Unhealthy ?
+                    'text-red-600' :
+                    currentAqiCategory === AqiCategory.VeryUnhealthy ?
+                      'text-purple-700' :
+                      currentAqiCategory === AqiCategory.Hazardous ?
+                        'text-amber-900' :
+                        'text-black'
+          }`} />
+          <span>
+            {categorizeAqi(currentAqi)}
+          </span>
+        </div>
       </DataBox>
     </div>
     
