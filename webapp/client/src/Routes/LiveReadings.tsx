@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
-import { AqiCategory, categorizeAqi, convertPm25ToAqi } from '../utils/AQIUtils';
+import { AqiCategory, categorizeAqi, convertPm25ToAqi } from '../Utils/AQIUtils';
 import { ComponentChildren } from 'preact';
-import { IoIosSquare } from 'react-icons/io';
+import QualityColorSquare from '../Components/QualityColorSquare';
 
 
 export default function LiveReadings() {
@@ -55,21 +55,7 @@ export default function LiveReadings() {
       )}
       <DataBox title="Equivalent AQI" value={currentAqi}>
         <div className="flex flex-row justify-center">
-          <IoIosSquare className={`text-xl stroke-black ${
-            currentAqiCategory === AqiCategory.Good ?
-              'text-green-500' :
-              currentAqiCategory === AqiCategory.Moderate ?
-                'text-yellow-300' :
-                currentAqiCategory === AqiCategory.UnhealthyForSensitiveGroups ?
-                  'text-orange-500' :
-                  currentAqiCategory === AqiCategory.Unhealthy ?
-                    'text-red-600' :
-                    currentAqiCategory === AqiCategory.VeryUnhealthy ?
-                      'text-purple-700' :
-                      currentAqiCategory === AqiCategory.Hazardous ?
-                        'text-amber-900' :
-                        'text-black'
-          }`} />
+          <QualityColorSquare {...{currentAqiCategory}} />
           <span>
             {categorizeAqi(currentAqi)}
           </span>

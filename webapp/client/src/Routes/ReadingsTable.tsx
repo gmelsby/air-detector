@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'preact/hooks';
 import { BsFillCaretLeftFill, BsFillCaretRightFill, BsCaretRight } from 'react-icons/bs';
+import { convertPm25ToAqi, categorizeAqi } from '../Utils/AQIUtils';
+import QualityColorSquare from '../Components/QualityColorSquare';
 
 export default function Table() {
 
@@ -21,19 +23,34 @@ export default function Table() {
 
   return (
     <div className="px-5">
-      <table className="table-auto border border-collapse border-slate-500 text-right m-auto">
+      <table className="table-auto border border-collapse border-slate-500 text-left m-auto">
         <thead>
           <tr>
-            {['Time', 'PM 1.0', 'PM 2.5', 'Particles > 0.3um', 'Particles > 0.5um'].map(label => {
+            {['Time', 'PM 1.0', 'PM 2.5', 'Equivalent AQI', 'Particles > 0.3um', 'Particles > 0.5um'].map(label => {
               return <td key={label} className="border border-slate-600 py-1 px-3 text-center">{label}</td>;
             })}
           </tr>
         </thead>
         {data === undefined ? <p>Loading...</p> : data.map(sample => {
+          const currentAqi = convertPm25ToAqi(sample.pm25);
+          const currentAqiCategory = categorizeAqi(currentAqi);
           return (<tr key={sample.localTime}>
             <td className="border border-slate-700 px-3 py-1"><b>{sample.localTime.slice(11, 16)}</b> {sample.localTime.slice(0, 10)}</td>
             <td className="border border-slate-700 px-3 py-1">{sample.pm1}</td>
             <td className="border border-slate-700 px-3 py-1">{sample.pm25}</td>
+            <td className="border border-slate-700 px-3 py-1">
+              <div className="flex flex-row flex-wrap justify-start justify-items-start">
+                <QualityColorSquare {...{currentAqiCategory}} />
+                <span className="px-1">
+                  {`${currentAqi} `}
+                </span>
+                <span>
+                  {currentAqiCategory}
+                </span>
+                
+              </div>
+            </td>
+          
             <td className="border border-slate-700 px-3 py-1">{sample.particles03}</td>
             <td className="border border-slate-700 px-3 py-1">{sample.particles05}</td>
           </tr>);
