@@ -11,6 +11,7 @@ import {
   Legend,
 } from 'chart.js';
 import { BsFillCaretLeftFill, BsFillCaretRightFill } from 'react-icons/bs';
+import { localTimeToMMDDYYYY } from '../Utils/DateUtils';
 
 export default function Graph() {
 
@@ -68,7 +69,7 @@ export default function Graph() {
   }, [getDailySamples, date, lowerDateBound, currentDate]);
 
   const chartData = {
-    labels: data?.map(d => d.localTime),
+    labels: data?.map(d => d.localTime.slice(11, 16)),
     datasets: [{
       label: 'PM 2.5',
       data: data?.map(d => d.pm25),
@@ -80,21 +81,30 @@ export default function Graph() {
       data: data?.map(d => d.pm1),
       fill: false,
       borderColor: 'rgb(0, 0, 0)'
-    }]
+    }],
+  };
+
+  const chartOptions = {
+    plugins: {
+      title: {
+        display: true,
+        text: `Readings on ${localTimeToMMDDYYYY(data?.[0].localTime)}`
+      }
+    }
   };
 
   return (
     <div className="container m-auto">
       {data === undefined ? 
         <p>Loading...</p> :
-        <Line data={chartData}/>
+        <Line data={chartData} options={chartOptions}/>
       }
       <div className="flex flex-row justify-center">
         <BsFillCaretLeftFill className="cursor-pointer" onClick={() => {
           dateField.current?.stepDown(1);
           setDate(dateField.current?.value);
         }}/>
-        <label htmlFor="dateSelect">Select date:</label>
+        <label htmlFor="dateSelect">Date:</label>
         <input type="date" id="dateSelect" ref={dateField} value={date} onChange={(e) => {
           if (e.target === null) return;
           // need to reassure Typescript we are dealing with an HTML Input Element
