@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'preact/hooks';
 import { BsFillCaretLeftFill, BsFillCaretRightFill, BsCaretRight } from 'react-icons/bs';
 import { convertPm25ToAqi, categorizeAqi } from '../Utils/AQIUtils';
 import QualityColorSquare from '../Components/QualityColorSquare';
+import { localTimeToMMDDYYYY } from '../Utils/DateUtils';
 
 export default function Table() {
 
@@ -35,7 +36,7 @@ export default function Table() {
           const currentAqi = convertPm25ToAqi(sample.pm25);
           const currentAqiCategory = categorizeAqi(currentAqi);
           return (<tr key={sample.localTime}>
-            <td className="border border-slate-700 px-3 py-1"><b>{sample.localTime.slice(11, 16)}</b> {sample.localTime.slice(0, 10)}</td>
+            <td className="border border-slate-700 px-3 py-1">{localTimeToMMDDYYYY(sample.localTime)}<b> {sample.localTime.slice(11, 16)}</b></td>
             <td className="border border-slate-700 px-3 py-1">{sample.pm1}</td>
             <td className="border border-slate-700 px-3 py-1">{sample.pm25}</td>
             <td className="border border-slate-700 px-3 py-1">
