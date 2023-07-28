@@ -14,6 +14,7 @@ import { BsCaretRight, BsFillCaretLeftFill, BsFillCaretRightFill } from 'react-i
 import { localTimeToMMDDYYYY } from '../Utils/DateUtils';
 import { convertPm25ToAqi } from '../Utils/AQIUtils';
 
+// for controlling what data is displayed
 enum DisplayMode {
   Pm,
   Aqi
@@ -31,7 +32,7 @@ export default function Graph() {
     Legend
   );
 
-  const [mode] = useState(DisplayMode.Aqi);// determines what we are showing with the graph
+  const [view, setView] = useState(DisplayMode.Aqi);// determines what we are showing with the graph
   const [currentDate, setCurrentDate] = useState<Date | undefined>(undefined);
   const [date, setDate] = useState<string | undefined>(undefined);
 
@@ -48,17 +49,14 @@ export default function Graph() {
 
   // keeps track of samples
   const [data, setData] = useState<Sample[] | undefined>(undefined);
-  const [aqis, setAqis] = useState<number[]>([]);
-
 
   const getDailySamples = useCallback(async (date: string) => {
     const response = await fetch(`/api/samples?date=${date}`);
     const result = await response.json();
     if (response.status === 200) {
       setData(result);
-      setAqis(result.map((s: Sample) => convertPm25ToAqi(s.pm25)));
     }
-  }, [setData, setAqis]);
+  }, [setData]);
 
   // don't fetch any data before this date--it won't exist!
   const lowerDateBound = Date.parse('2023-07-12');
@@ -82,18 +80,18 @@ export default function Graph() {
     label: 'PM 2.5',
     data: data?.map(d => d.pm25),
     fill: false,
-    borderColor: 'rgb(255, 0, 0)',
+    borderColor: 'blue',
   },
   {
     label: 'PM 1.0',
     data: data?.map(d => d.pm1),
     fill: false,
-    borderColor: 'rgb(0, 0, 0)'
+    borderColor: 'green'
   }];
 
   const aqiDatasets = [{
     label: 'Equivalent AQI',
-    data: aqis,
+    data: data?.map(d => convertPm25ToAqi(d.pm25)),
     fill: false,
     borderColor: 'rgb(0, 0, 0)'
   }];
@@ -101,7 +99,7 @@ export default function Graph() {
   // conditionally display pm or aqi
   const chartData = {
     labels: data?.map(d => d.localTime.slice(11, 16)),
-    datasets: mode ===  DisplayMode.Pm ? pmDatasets : aqiDatasets
+    datasets: view ===  DisplayMode.Pm ? pmDatasets : aqiDatasets
   };
 
   // allows us to title graph
@@ -144,7 +142,18 @@ export default function Graph() {
           }}/>
         }
       </div>
-
+      <div className="flex flex-row justify-center">
+        <button disabled={view === DisplayMode.Pm} 
+          className="border p-3 m-3 rounded disabled:opacity-50"
+          onClick={() => setView(DisplayMode.Pm)}>
+          View PM
+        </button>
+        <button disabled={view === DisplayMode.Aqi} 
+          className="border p-3 m-3 rounded disabled:opacity-50" 
+          onClick={() => setView(DisplayMode.Aqi)}>
+          View AQI
+        </button>
+      </div>
     </div>
   );
 }
