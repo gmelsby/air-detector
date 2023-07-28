@@ -16,8 +16,8 @@ import { convertPm25ToAqi } from '../Utils/AQIUtils';
 
 // for controlling what data is displayed
 enum DisplayMode {
-  Pm,
-  Aqi
+  Pm = 'PM',
+  Aqi = 'AQI'
 }
 
 export default function Graph() {
@@ -67,11 +67,12 @@ export default function Graph() {
     const parsedDate = Date.parse(date);
     // check that javascript recognizes the date as a date
     if (Number.isNaN(parsedDate)) return;
-    // check that date isn't before set lowerDateBound
-    if (parsedDate < lowerDateBound) return;
-    // check that the selected date isn't in the future
-    if (parsedDate > currentDate.getTime()) return;
-
+    // check that date isn't before set lowerDateBound or in the future
+    if (parsedDate < lowerDateBound || parsedDate > currentDate.getTime())
+    {
+      setData([]);
+      return;
+    } 
     // we have validated, so now send request
     getDailySamples(date);
   }, [getDailySamples, date, lowerDateBound, currentDate]);
@@ -107,7 +108,9 @@ export default function Graph() {
     plugins: {
       title: {
         display: true,
-        text: `Readings on ${localTimeToMMDDYYYY(data?.[0].localTime)}`
+        text: (data === undefined || data[0] === undefined) ?  
+          `No data found for ${localTimeToMMDDYYYY(date)}` :
+          `${view} Readings on ${localTimeToMMDDYYYY(data?.[0]?.localTime)}`
       }
     }
   };
