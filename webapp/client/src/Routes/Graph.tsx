@@ -35,6 +35,7 @@ export default function Graph() {
   const [view, setView] = useState(DisplayMode.Aqi);// determines what we are showing with the graph
   const [currentDate, setCurrentDate] = useState<Date | undefined>(undefined);
   const [date, setDate] = useState<string | undefined>(undefined);
+  const [fetching, setFetching] = useState(false);
 
   // to keep track of the date input element
   const dateField = useRef<HTMLInputElement>(null);
@@ -51,11 +52,13 @@ export default function Graph() {
   const [data, setData] = useState<Sample[] | undefined>(undefined);
 
   const getDailySamples = useCallback(async (date: string) => {
+    setFetching(true);
     const response = await fetch(`/api/samples?date=${date}`);
-    const result = await response.json();
     if (response.status === 200) {
+      const result = await response.json();
       setData(result);
     }
+    setFetching(false);
   }, [setData]);
 
   // don't fetch any data before this date--it won't exist!
@@ -108,9 +111,11 @@ export default function Graph() {
     plugins: {
       title: {
         display: true,
-        text: (data === undefined || data[0] === undefined) ?  
-          `No data found for ${localTimeToMMDDYYYY(date)}` :
-          `${view} Readings on ${localTimeToMMDDYYYY(data?.[0]?.localTime)}`
+        text: fetching === true ?
+          `Loading data for ${localTimeToMMDDYYYY(date)}` :
+          data !== undefined && data[0] !== undefined ?  
+            `${view} Readings on ${localTimeToMMDDYYYY(data?.[0]?.localTime)}` :
+            `No data found for ${localTimeToMMDDYYYY(date)}`
       }
     }
   };
