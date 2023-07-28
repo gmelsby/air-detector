@@ -12,6 +12,12 @@ import {
 } from 'chart.js';
 import { BsCaretRight, BsFillCaretLeftFill, BsFillCaretRightFill } from 'react-icons/bs';
 import { localTimeToMMDDYYYY } from '../Utils/DateUtils';
+import { convertPm25ToAqi } from '../Utils/AQIUtils';
+
+enum DisplayMode {
+  Pm,
+  Aqi
+}
 
 export default function Graph() {
 
@@ -25,6 +31,7 @@ export default function Graph() {
     Legend
   );
 
+  const [mode] = useState(DisplayMode.Aqi);// determines what we are showing with the graph
   const [currentDate, setCurrentDate] = useState<Date | undefined>(undefined);
   const [date, setDate] = useState<string | undefined>(undefined);
 
@@ -39,7 +46,9 @@ export default function Graph() {
     setDate(tzAdjustedDate.toISOString().slice(0, 10));
   }, [setDate, setCurrentDate]);
 
+  // keeps track of samples
   const [data, setData] = useState<Sample[] | undefined>(undefined);
+  const [aqis, setAqis] = useState<number[]>([]);
 
 
   const getDailySamples = useCallback(async (date: string) => {
@@ -47,8 +56,9 @@ export default function Graph() {
     const result = await response.json();
     if (response.status === 200) {
       setData(result);
+      setAqis(result.map((s: Sample) => convertPm25ToAqi(s.pm25)));
     }
-  }, [setData]);
+  }, [setData, setAqis]);
 
   // don't fetch any data before this date--it won't exist!
   const lowerDateBound = Date.parse('2023-07-12');
@@ -68,22 +78,33 @@ export default function Graph() {
     getDailySamples(date);
   }, [getDailySamples, date, lowerDateBound, currentDate]);
 
+  const pmDatasets = [{
+    label: 'PM 2.5',
+    data: data?.map(d => d.pm25),
+    fill: false,
+    borderColor: 'rgb(255, 0, 0)',
+  },
+  {
+    label: 'PM 1.0',
+    data: data?.map(d => d.pm1),
+    fill: false,
+    borderColor: 'rgb(0, 0, 0)'
+  }];
+
+  const aqiDatasets = [{
+    label: 'Equivalent AQI',
+    data: aqis,
+    fill: false,
+    borderColor: 'rgb(0, 0, 0)'
+  }];
+
+  // conditionally display pm or aqi
   const chartData = {
     labels: data?.map(d => d.localTime.slice(11, 16)),
-    datasets: [{
-      label: 'PM 2.5',
-      data: data?.map(d => d.pm25),
-      fill: false,
-      borderColor: 'rgb(255, 0, 0)',
-    },
-    {
-      label: 'PM 1.0',
-      data: data?.map(d => d.pm1),
-      fill: false,
-      borderColor: 'rgb(0, 0, 0)'
-    }],
+    datasets: mode ===  DisplayMode.Pm ? pmDatasets : aqiDatasets
   };
 
+  // allows us to title graph
   const chartOptions = {
     plugins: {
       title: {
