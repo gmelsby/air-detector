@@ -61,6 +61,7 @@ export default function LiveReadings() {
           </span>
         </div>
       </DataBox>
+      {isFetching && <p>Updating...</p>}
     </div>
     
   );
