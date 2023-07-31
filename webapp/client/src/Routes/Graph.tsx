@@ -12,6 +12,13 @@ import {
 } from 'chart.js';
 import { BsCaretRight, BsFillCaretLeftFill, BsFillCaretRightFill } from 'react-icons/bs';
 import { localTimeToMMDDYYYY } from '../Utils/DateUtils';
+import { convertPm25ToAqi } from '../Utils/AQIUtils';
+
+// for controlling what data is displayed
+enum DisplayMode {
+  Pm = 'PM',
+  Aqi = 'AQI'
+}
 
 export default function Graph() {
 
@@ -25,8 +32,10 @@ export default function Graph() {
     Legend
   );
 
+  const [view, setView] = useState(DisplayMode.Aqi);// determines what we are showing with the graph
   const [currentDate, setCurrentDate] = useState<Date | undefined>(undefined);
   const [date, setDate] = useState<string | undefined>(undefined);
+  const [fetching, setFetching] = useState(false);
 
   // to keep track of the date input element
   const dateField = useRef<HTMLInputElement>(null);
@@ -39,15 +48,17 @@ export default function Graph() {
     setDate(tzAdjustedDate.toISOString().slice(0, 10));
   }, [setDate, setCurrentDate]);
 
+  // keeps track of samples
   const [data, setData] = useState<Sample[] | undefined>(undefined);
 
-
   const getDailySamples = useCallback(async (date: string) => {
+    setFetching(true);
     const response = await fetch(`/api/samples?date=${date}`);
-    const result = await response.json();
     if (response.status === 200) {
+      const result = await response.json();
       setData(result);
     }
+    setFetching(false);
   }, [setData]);
 
   // don't fetch any data before this date--it won't exist!
@@ -59,36 +70,52 @@ export default function Graph() {
     const parsedDate = Date.parse(date);
     // check that javascript recognizes the date as a date
     if (Number.isNaN(parsedDate)) return;
-    // check that date isn't before set lowerDateBound
-    if (parsedDate < lowerDateBound) return;
-    // check that the selected date isn't in the future
-    if (parsedDate > currentDate.getTime()) return;
-
+    // check that date isn't before set lowerDateBound or in the future
+    if (parsedDate < lowerDateBound || parsedDate > currentDate.getTime())
+    {
+      setData([]);
+      return;
+    } 
     // we have validated, so now send request
     getDailySamples(date);
   }, [getDailySamples, date, lowerDateBound, currentDate]);
 
+  const pmDatasets = [{
+    label: 'PM 2.5',
+    data: data?.map(d => d.pm25),
+    fill: false,
+    borderColor: 'blue',
+  },
+  {
+    label: 'PM 1.0',
+    data: data?.map(d => d.pm1),
+    fill: false,
+    borderColor: 'green'
+  }];
+
+  const aqiDatasets = [{
+    label: 'Equivalent AQI',
+    data: data?.map(d => convertPm25ToAqi(d.pm25)),
+    fill: false,
+    borderColor: 'rgb(0, 0, 0)'
+  }];
+
+  // conditionally display pm or aqi
   const chartData = {
     labels: data?.map(d => d.localTime.slice(11, 16)),
-    datasets: [{
-      label: 'PM 2.5',
-      data: data?.map(d => d.pm25),
-      fill: false,
-      borderColor: 'rgb(255, 0, 0)',
-    },
-    {
-      label: 'PM 1.0',
-      data: data?.map(d => d.pm1),
-      fill: false,
-      borderColor: 'rgb(0, 0, 0)'
-    }],
+    datasets: view ===  DisplayMode.Pm ? pmDatasets : aqiDatasets
   };
 
+  // allows us to title graph
   const chartOptions = {
     plugins: {
       title: {
         display: true,
-        text: `Readings on ${localTimeToMMDDYYYY(data?.[0].localTime)}`
+        text: fetching === true ?
+          `Loading data for ${localTimeToMMDDYYYY(date)}` :
+          data !== undefined && data[0] !== undefined ?  
+            `${view} Readings on ${localTimeToMMDDYYYY(data?.[0]?.localTime)}` :
+            `No data found for ${localTimeToMMDDYYYY(date)}`
       }
     }
   };
@@ -123,7 +150,18 @@ export default function Graph() {
           }}/>
         }
       </div>
-
+      <div className="flex flex-row justify-center">
+        <button disabled={view === DisplayMode.Pm} 
+          className="border p-3 m-3 rounded disabled:opacity-50"
+          onClick={() => setView(DisplayMode.Pm)}>
+          View PM
+        </button>
+        <button disabled={view === DisplayMode.Aqi} 
+          className="border p-3 m-3 rounded disabled:opacity-50" 
+          onClick={() => setView(DisplayMode.Aqi)}>
+          View AQI
+        </button>
+      </div>
     </div>
   );
 }
