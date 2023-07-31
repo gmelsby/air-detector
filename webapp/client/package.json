@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "npm run css-refresh && tsc && vite build",
     "preview": "vite preview",
     "css-refresh": "tailwindcss -i ./src/tailwindapp.css -o ./src/app.css",
     "css-watch": "tailwindcss -i ./src/tailwindapp.css -o ./src/app.css --watch"
