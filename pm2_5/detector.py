@@ -29,6 +29,13 @@ datetime('now'),
 )
 '''
 
+# Query to get the local time of the row with rowid
+TIME_QUERY = '''
+SELECT datetime(dt, 'localtime') as localTime
+FROM Samples
+WHERE rowid = ?
+'''
+
 def get_sensor():
     """
     returns a connection to the sensor
@@ -56,6 +63,7 @@ def get_reading(sensor, retries=5):
 def write_to_db(data, retries=3):
     """
     Connect to sqlite database
+    Write reading and return row representing reading
     """
 
     # get absolute path
@@ -69,9 +77,14 @@ def write_to_db(data, retries=3):
         try:
             # execute query
             cursor.execute(INSERTION_QUERY, data)
+            # get last row id
+            row_id = cursor.lastrowid
+            # get localTime of inserted row
+            localTimeRows = cursor.execute(TIME_QUERY, (row_id,))
+            localTimeRow = cursor.fetchone()
             # commit insertion
             conn.commit()
-            return cursor.fetchone()
+            return localTimeRow[0]
         except sqlite3.Error as e:
             time.sleep(1)
             # retry until we write or run out of retries
@@ -133,6 +146,7 @@ def main():
             sys.exit(os.EX_UNAVAILABLE)
 
         if args.verbose: print('successfully wrote to database')
+        data_dict['localTime'] = result
 
     # output reading to stdout
     print(json.dumps(data_dict))
