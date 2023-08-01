@@ -1,14 +1,13 @@
 # Raspberry Pi Air Quality Monitor
 ### Full-stack local IOT air quality monitor that runs on a Raspberry Pi.
-### Required materials
-- [Plantower PM2.5 Air Quality Sensor](https://learn.adafruit.com/pm25-air-quality-sensor)
-- Raspberry Pi (Only tested with the Pi Zero W, but any model after the Pi 1 Model B _should_ work--no guarantees though)  
 ### Consists of 
 - cron job Python script for reading data
 - SQLite database for storing data
 - Go chi API for retrieving stored data and creating current readings
 - Preact client for displaying readings
-
+### AQI Conversion Note
+Conversion to equivalent AQI is performed using the formulas found in [this document](https://www.airnow.gov/sites/default/files/2020-05/aqi-technical-assistance-document-sept2018.pdf) from airnow.gov. \
+Note that this is not _actual_ AQI, as an actual AQI calculation uses measurements over a 24-hour period and requires data about pollutants other than PM2.5 such as PM10, Ozone, CO, NO2, and SO2.
 ### Screenshots of Web Interface
 | Live Readings (updates every 5s) |
 |:--:|
@@ -26,6 +25,9 @@
 |:--:|
 | ![PM 1.0 and 2.5 Graph](screenshots/PM%20Graph.png) |
 
+### Required materials
+- [Plantower PM2.5 Air Quality Sensor](https://learn.adafruit.com/pm25-air-quality-sensor)
+- Raspberry Pi (Only tested with the Pi Zero W, but any model after the Pi 1 Model B _should_ work--no guarantees though)  
 ## Setup Instructions
 _These instructions assume the device is running Raspberry Pi OS (previously called Raspbian). A full-featured guide to installing Raspberry Pi OS can be found [here](https://www.raspberrypi.com/software/)_
 #### Set Up Hardware
