@@ -10,18 +10,18 @@ Required materials
 - Preact client for displaying readings
 
 ### Screenshots of Web Interface
-| *Live Readings (updates every 5s)* |
+| Live Readings (updates every 5s) |
 |:--:|
 | ![Live Readings](screenshots/Live%20Readings.png) |
 
-| *Recent Readings Table* |
+| Recent Readings Table |
 |:--:|
 | ![Recent Readings Table](screenshots/Table.png) |
 
-| *Equivalent AQI Graph* |
+| Equivalent AQI Graph |
 |:--:|
 | ![Equivalent AQI](screenshots/AQI%20Graph.png) |
 
-| *PM 1.0 and 2.5 Graph* |
+| PM 1.0 and 2.5 Graph |
 |:--:|
 | ![PM 1.0 and 2.5 Graph](screenshots/PM%20Graph.png) |
