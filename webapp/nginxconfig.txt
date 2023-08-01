@@ -1,0 +1,10 @@
+server {
+		listen 0.0.0.0:80;
+		location / {
+			root /home/pi/air-detector/webapp/client/dist;
+			try_files $uri $uri/ /index.html;
+		}
+		location /api/ {
+			proxy_pass http://127.0.0.1:3000/;
+		}
+	}
