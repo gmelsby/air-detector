@@ -1,4 +1,4 @@
-# Raspberry Pi Air Quality Montior
+# Raspberry Pi Air Quality Monitor
 ### Full-stack local IOT air quality monitor that runs on a Raspberry Pi.
 ### Required materials
 - [Plantower PM2.5 Air Quality Sensor](https://learn.adafruit.com/pm25-air-quality-sensor)
@@ -66,7 +66,7 @@ Save and exit the editor.
 #### Build and Host API
 Install Go by following [these instructions](https://go.dev/doc/install). The release to install will have `armv6l` in the file name--you can find a list of releases [here](https://go.dev/dl/). Pick the most recent release in the form `go.x.y.z.linux-armv6l.tar.gz`. \
 Move to the API directory with `cd /home/pi/air-detector/webapp/api` \
-Install dependecies with `go mod tidy` \
+Install dependencies with `go mod tidy` \
 Make a directory to store built executable with `mkdir build` \
 Build the executable by running `go build -o build` 
 Create a systemd service to automatically run the API server by symlinking airwebappapi.service with `sudo ls -s /home/pi/air-detector/webapp/api/airwebappapi.service /etc/systemd/system/airwebappapi.service` \
