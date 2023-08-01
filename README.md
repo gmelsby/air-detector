@@ -45,7 +45,7 @@ Run `cat schema.sql | sqlite3 quality.db` to create the database
 Move into the `pm2_5` directory with `cd /home/pi/air-detector/pm2_5` \
 Create virtual environment with `python3 -m venv .venv` \
 Activate virtual environment with `source .venv/bin/activate` \
-Install necessary dependencies with `pip install -r requirements.txt`
+Install necessary dependencies with `pip install -r requirements.txt` \
 Test that setup has been successful so far with `python3 detector.py -sv` \
 If your setup has been successful, you should see output in this format: 
 ```
@@ -64,11 +64,12 @@ In the editor, insert the following at the bottom of the file:
 ```
 Save and exit the editor.
 #### Build and Host API
-Install Go by following [these instructions](https://go.dev/doc/install). The release to install will have `armv6l` in the file name--you can find a list of releases [here](https://go.dev/dl/). Pick the most recent release in the form `go.x.y.z.linux-armv6l.tar.gz`. \
+Install Go by following [these instructions](https://go.dev/doc/install). The release to install will have `armv6l` in the file name--you can find a list of releases [here](https://go.dev/dl/). \
+Pick the most recent release in the form `go.x.y.z.linux-armv6l.tar.gz`. \
 Move to the API directory with `cd /home/pi/air-detector/webapp/api` \
 Install dependencies with `go mod tidy` \
 Make a directory to store built executable with `mkdir build` \
-Build the executable by running `go build -o build` 
+Build the executable by running `go build -o build` \
 Create a systemd service to automatically run the API server by symlinking airwebappapi.service with `sudo ls -s /home/pi/air-detector/webapp/api/airwebappapi.service /etc/systemd/system/airwebappapi.service` \
 Reload the systemd services with `sudo systemctl daemon-reload` \
 The API should now be accessible on port 3000 of the device.
