@@ -131,7 +131,7 @@ def main():
 
     # save if flag specified
     if args.save:
-        if args.verbose: print("Writing values to database")
+        if args.verbose: print("writing values to database")
         try:
             result = write_to_db((
                 data_dict['pm1'],

@@ -1,0 +1,1 @@
+*/10 * * * * /home/pi/air-detector/pm2_5/.venv/bin/python /home/pi/air-detector/pm2_5/detector.py -s
