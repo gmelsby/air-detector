@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'preact/hooks';
 import { BsFillCaretLeftFill, BsFillCaretRightFill, BsCaretRight } from 'react-icons/bs';
 import { convertPm25ToAqi, categorizeAqi } from '../Utils/AQIUtils';
 import QualityColorSquare from '../Components/QualityColorSquare';
+import { IconContext } from 'react-icons';
 import { localTimeToMMDDYYYY } from '../Utils/DateUtils';
 
 export default function Table() {
@@ -64,12 +65,26 @@ export default function Table() {
         })}
       </table>
       <div className="flex flex-row justify-center my-5">
-        <BsFillCaretLeftFill className="cursor-pointer text-2xl" onClick={() => setPage(val => val + 1)}/>
+        <IconContext.Provider value={{
+          className: 'cursor-pointer text-2xl',
+        }} >
+          <div onClick={() => setPage(val => val + 1)}>
+            <BsFillCaretLeftFill />
+          </div>
+        </IconContext.Provider>
         <p className="mx-5">
           page {page}
         </p>
-        {page == 0 ? <BsCaretRight className="text-2xl"/> : 
-          <BsFillCaretRightFill className="cursor-pointer text-2xl" onClick={() => setPage(val => Math.max(0, val - 1))}/>
+        {page == 0 ? 
+          <IconContext.Provider value={{className: 'text-2xl'}}>
+            <BsCaretRight /> 
+          </IconContext.Provider>
+          : 
+          <IconContext.Provider value={{className: 'cursor-pointer text-2xl'}}>
+            <div onClick={() => setPage(val => Math.max(0, val - 1))}>
+              <BsFillCaretRightFill />
+            </div>
+          </IconContext.Provider>
         }
       </div>
     </div>

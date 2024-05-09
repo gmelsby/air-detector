@@ -11,6 +11,7 @@ import {
   Legend,
 } from 'chart.js';
 import { BsCaretRight, BsFillCaretLeftFill, BsFillCaretRightFill } from 'react-icons/bs';
+import { IconContext } from 'react-icons';
 import { localTimeToMMDDYYYY } from '../Utils/DateUtils';
 import { convertPm25ToAqi } from '../Utils/AQIUtils';
 
@@ -127,10 +128,19 @@ export default function Graph() {
         <Line data={chartData} options={chartOptions}/>
       }
       <div className="flex flex-row justify-center my-5">
-        <BsFillCaretLeftFill className="cursor-pointer text-2xl" onClick={() => {
-          dateField.current?.stepDown(1);
-          setDate(dateField.current?.value);
-        }}/>
+        <IconContext.Provider 
+          value={{
+            className: 'cursor-pointer text-2xl'
+          }} 
+
+        >
+          <div onClick={() => {
+            dateField.current?.stepDown(1);
+            setDate(dateField.current?.value);
+          }}>
+            <BsFillCaretLeftFill />
+          </div>
+        </IconContext.Provider>
         <div className="mx-5">
           <label htmlFor="dateSelect">Date:</label>
           <input type="date" id="dateSelect" ref={dateField} value={date} onChange={(e) => {
@@ -140,15 +150,23 @@ export default function Graph() {
             setDate(target.value);
           }}/>
         </div>
-        {currentDate === undefined
-        || dateField.current?.value === undefined 
-        || currentDate.getTime() < Date.parse(dateField.current?.value) + 86_400_000? // check that the day we are trying to move forward to is not in the future
-          <BsCaretRight className="text-2xl" /> :
-          <BsFillCaretRightFill className="cursor-pointer text-2xl" onClick={() => {
-            dateField.current?.stepUp(1);
-            setDate(dateField.current?.value);
-          }}/>
-        }
+        <IconContext.Provider value={{className: 'text-2xl'}}>
+          {currentDate === undefined
+          || dateField.current?.value === undefined 
+          || currentDate.getTime() < Date.parse(dateField.current?.value) + 86_400_000? // check that the day we are trying to move forward to is not in the future
+            <BsCaretRight /> :
+            <IconContext.Provider 
+              value={{className: 'cursor-pointer text-2xl'}}
+            >
+              <div onClick={() => {
+                dateField.current?.stepUp(1);
+                setDate(dateField.current?.value);
+              }}>
+                <BsFillCaretRightFill />
+              </div>
+            </IconContext.Provider>
+          }
+        </IconContext.Provider>
       </div>
       <div className="flex flex-row justify-center">
         <button disabled={view === DisplayMode.Pm} 
