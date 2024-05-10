@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'preact/hooks';
+import { useState, useEffect, useCallback, useRef } from 'preact/hooks';
 import { BsFillCaretLeftFill, BsFillCaretRightFill, BsCaretRight } from 'react-icons/bs';
 import { convertPm25ToAqi, categorizeAqi } from '../Utils/AQIUtils';
 import QualityColorSquare from '../Components/QualityColorSquare';
@@ -11,15 +11,24 @@ export default function Table() {
   const [page, setPage] = useState(0);
   const [linesPerPage] = useState(window.innerWidth > 640 ? 15 : 5);
   
+  const readingsFetchAbortController = useRef<AbortController>(); // AbortController for fetch request which populates table with samples
+
   // to be used in useEffect for getting samples
   const getSamples = useCallback(async (pageNumber: number, pageLimit: number) => {
-    const response = await fetch(`/api/samples?offset=${pageNumber * pageLimit}&count=${pageLimit}`);
+    readingsFetchAbortController.current = new AbortController();
+    const response = await fetch(`/api/samples?offset=${pageNumber * pageLimit}&count=${pageLimit}`, {signal: readingsFetchAbortController.current.signal});
     const result = await response.json();
     setData(result);
   }, [setData]);
 
   useEffect(() => {
     getSamples(page, linesPerPage);
+
+    return (() => {
+      if (readingsFetchAbortController.current) {
+        readingsFetchAbortController.current.abort();
+      }
+    });
   }, [getSamples, page, linesPerPage]);
 
 
