@@ -34,8 +34,8 @@ export default function Graph() {
   );
 
   const [view, setView] = useState(DisplayMode.Aqi);// determines what we are showing with the graph
-  const [currentDate, setCurrentDate] = useState<Date | undefined>(undefined);
-  const [date, setDate] = useState<string | undefined>(undefined);
+  const [currentDate, setCurrentDate] = useState<Date | undefined>(undefined); // Date representation of current date
+  const [date, setDate] = useState<string | undefined>(undefined); // string representation of current date
   const [fetching, setFetching] = useState(false);
 
   // to keep track of the date input element
@@ -52,9 +52,13 @@ export default function Graph() {
   // keeps track of samples
   const [data, setData] = useState<Sample[] | undefined>(undefined);
 
+  // AbortController to cancel fetch whenever date has changed
+  const sampleFetchAbortController = useRef<AbortController>();
+  // function to fetch the samples for a date
   const getDailySamples = useCallback(async (date: string) => {
     setFetching(true);
-    const response = await fetch(`/api/samples?date=${date}`);
+    sampleFetchAbortController.current = new AbortController();
+    const response = await fetch(`/api/samples?date=${date}`, {signal: sampleFetchAbortController.current.signal});
     if (response.status === 200) {
       const result = await response.json();
       setData(result);
@@ -79,6 +83,13 @@ export default function Graph() {
     } 
     // we have validated, so now send request
     getDailySamples(date);
+
+    // cancel fetch if date has changed
+    return (() => {
+      if (sampleFetchAbortController.current) {
+        sampleFetchAbortController.current.abort();
+      }
+    });
   }, [getDailySamples, date, lowerDateBound, currentDate]);
 
   const pmDatasets = [{
