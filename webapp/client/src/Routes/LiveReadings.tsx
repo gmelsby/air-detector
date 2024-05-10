@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useRef } from 'preact/hooks';
 import { AqiCategory, categorizeAqi, convertPm25ToAqi } from '../Utils/AQIUtils';
 import { ComponentChildren } from 'preact';
 import QualityColorSquare from '../Components/QualityColorSquare';
@@ -13,12 +13,14 @@ export default function LiveReadings() {
   const [currentAqi, setCurrentAqi] = useState(0);
   const [currentAqiCategory, setCurrentAqiCategory] = useState<AqiCategory | undefined>(undefined);
   const [currentSample, setCurrentSample] = useState<Sample | undefined>(undefined);
+  const liveReadingAbortController = useRef<AbortController>(); // AbortController for fetch
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | undefined = undefined;
     if (isFetching) {
       const fetchData = async () => {
-        const response = await fetch('/api/samples/current');
+        liveReadingAbortController.current = new AbortController();
+        const response = await fetch('/api/samples/current', {signal: liveReadingAbortController.current.signal});
         if (response.status !== 200) {
           console.log('Error fetching current data');
           setIsFetching(false);
@@ -35,14 +37,19 @@ export default function LiveReadings() {
       fetchData();
 
     }
-    // every 5 seconds update sample
+    // update sample every intervalInMs seconds
     else {
       timeoutId = setTimeout(() => {
         setIsFetching(true);
       }, intervalInMs);
     }
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(timeoutId);
+      if (liveReadingAbortController.current) {
+        liveReadingAbortController.current.abort();
+      }
+    };
 
   }, [setCurrentSample, intervalInMs, isFetching, setIsFetching]);
 
