@@ -81,11 +81,12 @@ export default function Graph() {
       setData([]);
       return;
     } 
-    // we have validated, so now send request
-    getDailySamples(date);
+    // we have validated, so now wait for timeout and send request
+    const timeoutId = setTimeout(() => getDailySamples(date), 1000);
 
-    // cancel fetch if date has changed
+    // cancel fetch if date has changed or component unmounts before timeout
     return (() => {
+      clearTimeout(timeoutId);
       if (sampleFetchAbortController.current) {
         sampleFetchAbortController.current.abort();
       }
