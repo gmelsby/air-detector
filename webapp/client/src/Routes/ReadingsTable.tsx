@@ -22,9 +22,10 @@ export default function Table() {
   }, [setData]);
 
   useEffect(() => {
-    getSamples(page, linesPerPage);
+    const timeoutId = setTimeout(() => getSamples(page, linesPerPage), 1000);
 
     return (() => {
+      clearTimeout(timeoutId);
       if (readingsFetchAbortController.current) {
         readingsFetchAbortController.current.abort();
       }
